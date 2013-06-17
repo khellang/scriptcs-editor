@@ -1,0 +1,167 @@
+﻿<UserControl x:Class="ScriptCsPad.Views.ShellView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+             xmlns:b="clr-namespace:ScriptCsPad.Behaviors"
+             xmlns:avalonEdit="clr-namespace:ICSharpCode.AvalonEdit;assembly=ICSharpCode.AvalonEdit"
+             xmlns:cal="clr-namespace:Caliburn.Micro;assembly=Caliburn.Micro"
+             mc:Ignorable="d"
+             d:DesignHeight="300" d:DesignWidth="300" Background="#3e3e42">
+    <UserControl.Resources>
+        <DataTemplate x:Key="ReferenceListItem">
+            <StackPanel Orientation="Horizontal">
+                <Image Source="../Resources/reference_16xLG.png" Width="16" Height="16" />
+                <TextBlock Foreground="White" Text="{Binding}" Margin="5,0,0,0" />
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="AssemblyListItem">
+            <StackPanel Orientation="Horizontal">
+                <Image Source="../Resources/Assembly_6212.png" Width="16" Height="16" />
+                <TextBlock Foreground="White" Text="{Binding}" Margin="5,0,0,0" />
+            </StackPanel>
+        </DataTemplate>
+    </UserControl.Resources>
+
+    <Grid Height="Auto" Width="Auto" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Menu IsMainMenu="True" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <MenuItem Header="_FILE">
+                <MenuItem Header="_New" x:Name="New">
+                    <MenuItem.Icon>
+                        <Image Source="../Resources/NewFile_6276.png" />
+                    </MenuItem.Icon>
+                </MenuItem>
+
+                <MenuItem Header="_Open..." x:Name="Open">
+                    <MenuItem.Icon>
+                        <Image Source="../Resources/Open_6529.png" />
+                    </MenuItem.Icon>
+                </MenuItem>
+
+                <Separator />
+
+                <MenuItem Header="_Save">
+                    <MenuItem.Icon>
+                        <Image Source="../Resources/Save_6530.png" />
+                    </MenuItem.Icon>
+                </MenuItem>
+
+                <MenuItem Header="Save _All">
+                    <MenuItem.Icon>
+                        <Image Source="../Resources/Saveall_6518.png" />
+                    </MenuItem.Icon>
+                </MenuItem>
+
+                <Separator />
+
+                <MenuItem Header="E_xit">
+                    <MenuItem.Icon>
+                        <Image Source="../Resources/Close_16xLG.png" />
+                    </MenuItem.Icon>
+                </MenuItem>
+            </MenuItem>
+        </Menu>
+
+        <!-- Main Content -->
+        <Grid Height="Auto" Width="Auto" Grid.Row="1" Margin="5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="300" />
+                <ColumnDefinition Width="Auto" MinWidth="10" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Expander ExpandDirection="Right" IsExpanded="True" Grid.Column="0">
+                <i:Interaction.Behaviors>
+                    <b:GridSplitterExpanderBehavior />
+                </i:Interaction.Behaviors>
+
+                <Expander.Content>
+                    <Grid Margin="5,1,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+
+                        <Grid Width="Auto" Margin="0,0,0,5" Grid.Row="0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Text="REFERENCES" Grid.Row="0" Padding="12,2,12,2" Margin="0,0,0,2"
+                                       Background="#1585b5" />
+                            <Border Background="#252526" Grid.Row="1">
+                                <ListBox ItemTemplate="{StaticResource AssemblyListItem}" ItemsSource="{Binding ActiveItem.References}" />
+                            </Border>
+                        </Grid>
+
+                        <Grid Width="Auto" Margin="0,0,0,1" Grid.Row="1">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Text="NAMESPACES" Grid.Row="0" Padding="12,2,12,2" Margin="0,0,0,2"
+                                       Background="#1585b5">
+                            </TextBlock>
+                            <Border Background="#252526" Grid.Row="1">
+                                <ListBox ItemTemplate="{StaticResource ReferenceListItem}"  ItemsSource="{Binding ActiveItem.UsingStatements}" />
+                            </Border>
+                        </Grid>
+                    </Grid>
+                </Expander.Content>
+            </Expander>
+
+            <GridSplitter Grid.Column="1" Height="100" VerticalAlignment="Center" Width="3"
+                          HorizontalAlignment="Center" Grid.Row="0" Background="#686868" />
+
+            <TabControl Grid.Column="2" x:Name="Items">
+                <i:Interaction.Behaviors>
+                    <b:TabStripScrollWheelBehavior InvertScrollDirection="False" ScrollWrapsAround="True" />
+                </i:Interaction.Behaviors>
+
+                <TabControl.ItemContainerStyle>
+                    <Style TargetType="{x:Type TabItem}">
+                        <Setter Property="Content" Value="{Binding}" />
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="{x:Type TabItem}">
+                                    <Grid>
+                                        <Border x:Name="Border">
+                                            <TextBlock Text="{Binding Name}" VerticalAlignment="Center"
+                                                       Margin="12,2,12,2" Foreground="White" />
+                                        </Border>
+                                    </Grid>
+
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsSelected" Value="True">
+                                            <Setter TargetName="Border" Property="Background" Value="#1585b5" />
+                                        </Trigger>
+                                        <Trigger Property="IsSelected" Value="False">
+                                            <Setter TargetName="Border" Property="Background" Value="{x:Null}" />
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </TabControl.ItemContainerStyle>
+            </TabControl>
+        </Grid>
+
+        <ContentControl x:Name="StatusBar" Grid.Row="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+                        Margin="0,0,0,0" MinHeight="25" />
+    </Grid>
+</UserControl>
